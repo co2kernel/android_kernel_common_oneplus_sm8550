@@ -54,7 +54,6 @@
 #include <linux/shmem_fs.h>
 #include <linux/ctype.h>
 #include <linux/debugfs.h>
-//#include "sched.h"
 
 #include <asm/tlbflush.h>
 #include <asm/div64.h>
@@ -7683,8 +7682,6 @@ int kswapd(void *p)
 	pg_data_t *pgdat = (pg_data_t *)p;
 	struct task_struct *tsk = current;
 	const struct cpumask *cpumask = cpumask_of_node(pgdat->node_id);
-
-	set_user_nice(tsk, -20);
 
 	if (!cpumask_empty(cpumask))
 		set_cpus_allowed_ptr(tsk, cpumask);
