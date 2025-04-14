@@ -145,6 +145,7 @@
   blk_set_stacking_limits
   blk_start_plug
   blk_sync_queue
+  blkdev_compat_ptr_ioctl
   blocking_notifier_call_chain
   blocking_notifier_chain_register
   blocking_notifier_chain_unregister
@@ -500,6 +501,7 @@
   dev_pm_opp_of_cpumask_remove_table
   dev_pm_opp_of_find_icc_paths
   dev_pm_opp_of_register_em
+  dev_pm_opp_remove
   dev_pm_opp_of_remove_table
   dev_pm_opp_put
   dev_pm_opp_put_clkname

@@ -268,7 +268,6 @@ int fuse_create_open_backing(
 		err = PTR_ERR(newent);
 		goto out;
 	}
-
 	inode = NULL;
 	entry = newent ? newent : entry;
 	err = finish_open(file, entry, fuse_open_file_backing);
@@ -300,7 +299,9 @@ int fuse_release_initialize(struct fuse_bpf_args *fa, struct fuse_release_in *fr
 			    struct inode *inode, struct fuse_file *ff)
 {
 	/* Always put backing file whatever bpf/userspace says */
-	fput(ff->backing_file);
+	if (ff->backing_file) {
+	    fput(ff->backing_file);
+	}
 
 	*fri = (struct fuse_release_in) {
 		.fh = ff->fh,
