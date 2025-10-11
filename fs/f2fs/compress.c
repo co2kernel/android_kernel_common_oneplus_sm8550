@@ -19,7 +19,6 @@
 #include "segment.h"
 #include <trace/events/f2fs.h>
 #if defined(CONFIG_F2FS_FS_COMPRESSION_FIXED_OUTPUT) || defined(__ARCH_HAS_LZ4_ACCELERATOR)
-#include "lz4armv8/lz4accel.h"
 #include "f2fs_lz4.h"
 #endif
 
@@ -355,8 +354,13 @@ static int lz4_decompress_pages(struct decompress_io_ctx *dic)
 
 	if (f2fs_compress_layout(dic->inode) == COMPRESS_FIXED_INPUT) {
 		expected = PAGE_SIZE << dic->log_cluster_size;
+#if defined(CONFIG_ARM64) && defined(CONFIG_KERNEL_MODE_NEON)
+		ret = LZ4_arm64_decompress_safe(dic->cbuf->cdata, dic->rbuf,
+						dic->clen, dic->rlen, false);
+#else
 		ret = LZ4_decompress_safe(dic->cbuf->cdata, dic->rbuf,
-						dic->clen, dic->rlen);
+						dic->clen, dic->rlen, false);
+#endif
 #ifdef CONFIG_F2FS_FS_COMPRESSION_FIXED_OUTPUT
 	} else {
 		uint8_t *dst = (uint8_t *)dic->rbuf + dic->rofs;
