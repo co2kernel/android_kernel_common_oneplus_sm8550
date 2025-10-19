@@ -56,3 +56,17 @@
 | ------------ | -------------- |
 | 一加 Open      | 22899          |
 | OPPO Find N3 | 22003 / 22203  |
+
+## 了解 Project-Trans 🍥!
+
+### Link:
+
+**https://github.com/project-trans / https://project-trans.org/**
+
+ *Never surrender to anxiety and depression,*
+
+ *we will eventually have our place in this world*
+
+ *If you can remember my name, if you can all remember my name*
+
+ *maybe I or "we", will be able to live freely one day.*
