@@ -1260,7 +1260,7 @@ static int loop_configure(struct loop_device *lo, fmode_t mode,
 		lo->lo_flags |= LO_FLAGS_READ_ONLY;
 
 	lo->workqueue = alloc_workqueue("loop%d",
-					WQ_UNBOUND | WQ_FREEZABLE,
+					WQ_UNBOUND | WQ_FREEZABLE | WQ_HIGHPRI,
 					0,
 					lo->lo_number);
 	if (!lo->workqueue) {
