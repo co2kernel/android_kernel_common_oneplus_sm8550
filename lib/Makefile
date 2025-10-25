@@ -2,6 +2,7 @@
 #
 # Makefile for some libs needed in the kernel.
 #
+ccflags-y += -O3 -ffast-math
 
 PGO_PROFILE := n
 

@@ -2,6 +2,7 @@
 #
 # Makefile for the linux memory manager.
 #
+ccflags-y += -O3 -ffast-math
 
 PGO_PROFILE_slab_common.o := n
 PGO_PROFILE_slob.o := n
