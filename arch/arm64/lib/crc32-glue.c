@@ -23,7 +23,7 @@ asmlinkage u32 crc32_be_arm64_4way(u32 crc, unsigned char const *p, size_t len);
 
 u32 __pure crc32_le(u32 crc, unsigned char const *p, size_t len)
 {
-	if (!alternative_has_cap_likely(ARM64_HAS_CRC32))
+	if (!likely(cpus_have_cap(ARM64_HAS_CRC32)))
 		return crc32_le_base(crc, p, len);
 
 	if (len >= min_len && cpu_have_named_feature(PMULL) && crypto_simd_usable()) {
@@ -43,7 +43,7 @@ u32 __pure crc32_le(u32 crc, unsigned char const *p, size_t len)
 
 u32 __pure __crc32c_le(u32 crc, unsigned char const *p, size_t len)
 {
-	if (!alternative_has_cap_likely(ARM64_HAS_CRC32))
+	if (!likely(cpus_have_cap(ARM64_HAS_CRC32)))
 		return __crc32c_le_base(crc, p, len);
 
 	if (len >= min_len && cpu_have_named_feature(PMULL) && crypto_simd_usable()) {
@@ -63,7 +63,7 @@ u32 __pure __crc32c_le(u32 crc, unsigned char const *p, size_t len)
 
 u32 __pure crc32_be(u32 crc, unsigned char const *p, size_t len)
 {
-	if (!alternative_has_cap_likely(ARM64_HAS_CRC32))
+	if (!likely(cpus_have_cap(ARM64_HAS_CRC32)))
 		return crc32_be_base(crc, p, len);
 
 	if (len >= min_len && cpu_have_named_feature(PMULL) && crypto_simd_usable()) {
