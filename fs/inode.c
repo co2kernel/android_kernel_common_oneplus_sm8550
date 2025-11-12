@@ -207,6 +207,10 @@ int inode_init_always(struct super_block *sb, struct inode *inode)
 	if (unlikely(security_inode_alloc(inode)))
 		return -ENOMEM;
 	this_cpu_inc(nr_inodes);
+#ifdef CONFIG_CONT_PTE_HUGEPAGE
+	/* for cont-pte file hugepage */
+	inode->may_cont_pte = 0;
+#endif
 
 	return 0;
 }
@@ -254,9 +258,17 @@ static struct inode *alloc_inode(struct super_block *sb)
 	return inode;
 }
 
+#ifdef CONFIG_BLOCKIO_UX_OPT
+extern void check_destory_protect_inode(struct inode *inode);
+#endif
+
 void __destroy_inode(struct inode *inode)
 {
 	BUG_ON(inode_has_buffers(inode));
+#ifdef CONFIG_BLOCKIO_UX_OPT
+	if(fileprotect_enable())
+		check_destory_protect_inode(inode);
+#endif
 	inode_detach_wb(inode);
 	security_inode_free(inode);
 	fsnotify_inode_delete(inode);

@@ -179,7 +179,15 @@ static void move_ptes(struct vm_area_struct *vma, pmd_t *old_pmd,
 				   new_pte++, new_addr += PAGE_SIZE) {
 		if (pte_none(*old_pte))
 			continue;
-
+#ifdef CONFIG_CONT_PTE_HUGEPAGE
+		/* in mremap case, new_addres might not be aligned */
+		if (pte_cont(*old_pte)) {
+			if (new_ptl == old_ptl)
+				__split_huge_cont_pte(vma, old_pte, old_addr, false, NULL, old_ptl);
+			else
+				__split_huge_cont_pte_double_ptl(vma, old_pte, old_addr, false, NULL, new_ptl, old_ptl);
+		}
+#endif
 		pte = ptep_get_and_clear(mm, old_addr, old_pte);
 		/*
 		 * If we are remapping a valid PTE, make sure
@@ -219,12 +227,44 @@ static inline bool arch_supports_page_table_move(void)
 }
 #endif
 
+#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
+static inline bool trylock_vma_ref_count(struct vm_area_struct *vma)
+{
+	/*
+	 * If we have the only reference, swap the refcount to -1. This
+	 * will prevent other concurrent references by get_vma() for SPFs.
+	 */
+	return atomic_cmpxchg_acquire(&vma->file_ref_count, 0, -1) == 0;
+}
+
+/*
+ * Restore the VMA reference count to 1 after a fast mremap.
+ */
+static inline void unlock_vma_ref_count(struct vm_area_struct *vma)
+{
+	int old = atomic_xchg_release(&vma->file_ref_count, 0);
+
+	/*
+	 * This should only be called after a corresponding,
+	 * successful trylock_vma_ref_count().
+	 */
+	VM_BUG_ON_VMA(old != -1, vma);
+}
+#else	/* !CONFIG_SPECULATIVE_PAGE_FAULT */
+static inline bool trylock_vma_ref_count(struct vm_area_struct *vma)
+{
+	return true;
+}
+static inline void unlock_vma_ref_count(struct vm_area_struct *vma)
+{
+}
+#endif	/* CONFIG_SPECULATIVE_PAGE_FAULT */
+
 #ifdef CONFIG_HAVE_MOVE_PMD
 static bool move_normal_pmd(struct vm_area_struct *vma, unsigned long old_addr,
 		  unsigned long new_addr, pmd_t *old_pmd, pmd_t *new_pmd)
 {
 	spinlock_t *old_ptl, *new_ptl, *old_pte_ptl;
-
 	struct mm_struct *mm = vma->vm_mm;
 	pmd_t pmd;
 
@@ -254,6 +294,14 @@ static bool move_normal_pmd(struct vm_area_struct *vma, unsigned long old_addr,
 	 * this point, and verify that it really is empty. We'll see.
 	 */
 	if (WARN_ON_ONCE(!pmd_none(*new_pmd)))
+		return false;
+
+	/*
+	 * We need to ensure that fast-remap is not racing with a concurrent
+	 * SPF is in progress, since a fast remap can change the vmf's pmd
+	 * and hence its ptl from under it, by moving the pmd_t entry.
+	 */
+	if (!trylock_vma_ref_count(vma))
 		return false;
 
 	/*
@@ -298,6 +346,7 @@ static bool move_normal_pmd(struct vm_area_struct *vma, unsigned long old_addr,
 		spin_unlock(new_ptl);
 	spin_unlock(old_ptl);
 
+	unlock_vma_ref_count(vma);
 	return true;
 }
 #else

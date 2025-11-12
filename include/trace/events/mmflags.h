@@ -110,6 +110,12 @@
 #define IF_HAVE_PG_SKIP_KASAN_POISON(flag,string)
 #endif
 
+#ifdef CONFIG_BLOCKIO_UX_OPT
+#define IF_HAVE_PG_PROTECTED(flag,string) ,{1UL << flag, string}
+#else
+#define IF_HAVE_PG_PROTECTED(flag,string)
+#endif
+
 #define __def_pageflag_names						\
 	{1UL << PG_locked,		"locked"	},		\
 	{1UL << PG_waiters,		"waiters"	},		\
@@ -143,7 +149,8 @@ IF_HAVE_PG_OEM_RESERVED(PG_oem_reserved_1,"oem_reserved_1")		\
 IF_HAVE_PG_OEM_RESERVED(PG_oem_reserved_2,"oem_reserved_2")		\
 IF_HAVE_PG_OEM_RESERVED(PG_oem_reserved_3,"oem_reserved_3")		\
 IF_HAVE_PG_OEM_RESERVED(PG_oem_reserved_4,"oem_reserved_4")		\
-IF_HAVE_PG_SKIP_KASAN_POISON(PG_skip_kasan_poison, "skip_kasan_poison")
+IF_HAVE_PG_SKIP_KASAN_POISON(PG_skip_kasan_poison, "skip_kasan_poison")		\
+IF_HAVE_PG_PROTECTED(PG_protect, "protect")
 
 #define show_page_flags(flags)						\
 	(flags) ? __print_flags(flags, "|",				\

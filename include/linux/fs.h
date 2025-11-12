@@ -204,6 +204,9 @@ typedef int (dio_iodone_t)(struct kiocb *iocb, loff_t offset,
 #define ATTR_OPEN	(1 << 15) /* Truncating from open(O_TRUNC) */
 #define ATTR_TIMES_SET	(1 << 16)
 #define ATTR_TOUCH	(1 << 17)
+#ifdef CONFIG_BLOCKIO_UX_OPT
+#define S_MEMPROTECT	(1 << 18) /* page protect (using mm/) */
+#endif
 
 /*
  * Whiteout is represented by a char device.  The following constants define the
@@ -486,7 +489,15 @@ struct address_space {
 	struct list_head	private_list;
 	void			*private_data;
 
+	/*
+	 * android common kernel disabled CONFIG_READ_ONLY_THP_FOR_FS but we need nr_thps
+	 * avoiding modifying the data struct, we re-use reserved field for it
+	 */
+#if !defined(CONFIG_READ_ONLY_THP_FOR_FS) && defined(CONFIG_CONT_PTE_HUGEPAGE)
+	ANDROID_KABI_USE(1, atomic_t nr_thps);
+#else
 	ANDROID_KABI_RESERVE(1);
+#endif
 	ANDROID_KABI_RESERVE(2);
 	ANDROID_KABI_RESERVE(3);
 	ANDROID_KABI_RESERVE(4);
@@ -1444,6 +1455,9 @@ extern int send_sigurg(struct fown_struct *fown);
 #define SB_SILENT       BIT(15)
 #define SB_POSIXACL     BIT(16)	/* VFS does not apply the umask */
 #define SB_INLINECRYPT  BIT(17)	/* Use blk-crypto for encrypted files */
+#ifdef CONFIG_BLOCKIO_UX_OPT
+#define SB_UX	(1<<20)	/* Indicate ux flag for decompress workqueue */
+#endif
 #define SB_KERNMOUNT    BIT(22)	/* this is a kern_mount call */
 #define SB_I_VERSION    BIT(23)	/* Update inode I_version field */
 #define SB_LAZYTIME     BIT(25)	/* Update the on-disk [acm]times lazily */

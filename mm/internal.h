@@ -12,6 +12,12 @@
 #include <linux/pagemap.h>
 #include <linux/tracepoint-defs.h>
 
+#ifdef CONFIG_BLOCKIO_UX_OPT
+bool mem_available_is_low(void);
+void set_fileprotect_page(struct page *page);
+bool mapping_protect(struct address_space *mapping);
+bool should_be_protect(struct page *page, bool mem_is_low);
+#endif
 /*
  * The set of flags that only affect watermark checking and reclaim
  * behaviour. This is used by the MM to obey the caller constraints
