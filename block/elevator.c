@@ -626,8 +626,7 @@ static inline bool elv_support_iosched(struct request_queue *q)
 }
 
 /*
- * For single queue devices, default to using mq-deadline. If we have multiple
- * queues or mq-deadline is not available, default to "none".
+ * For single queue devices, default to "none".
  */
 static struct elevator_type *elevator_get_default(struct request_queue *q)
 {
@@ -638,7 +637,7 @@ static struct elevator_type *elevator_get_default(struct request_queue *q)
 			!blk_mq_is_sbitmap_shared(q->tag_set->flags))
 		return NULL;
 
-	return elevator_get(q, "mq-deadline", false);
+	return elevator_get(q, "none", false);
 }
 
 /*
@@ -775,6 +774,9 @@ ssize_t elv_iosched_store(struct request_queue *q, const char *name,
 			  size_t count)
 {
 	int ret;
+
+	/* Prevents changing I/O scheduler from userspace */
+	return -EPERM;
 
 	if (!elv_support_iosched(q))
 		return count;
