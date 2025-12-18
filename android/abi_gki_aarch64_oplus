@@ -58,6 +58,10 @@
   copy_from_kernel_nofault
   copy_fs_struct
   cpufreq_update_util_data
+  cpu_cgrp_subsys
+  css_task_iter_end
+  css_task_iter_next
+  css_task_iter_start
   __cpuhp_remove_state
   __cpuhp_setup_state
   __cpuhp_state_add_instance
@@ -524,6 +528,8 @@
   __traceiter_android_vh_rwsem_opt_spin_start
   __traceiter_android_vh_rwsem_wake_finish
   __traceiter_android_vh_save_track_hash
+  __traceiter_android_vh_sched_move_task
+  __traceiter_android_vh_reweight_entity
   __traceiter_android_vh_sched_show_task
   __traceiter_android_vh_sched_stat_runtime_rt
   __traceiter_android_vh_show_mapcount_pages
@@ -674,6 +680,8 @@
   __tracepoint_android_vh_rwsem_opt_spin_start
   __tracepoint_android_vh_rwsem_wake_finish
   __tracepoint_android_vh_save_track_hash
+  __tracepoint_android_vh_sched_move_task
+  __tracepoint_android_vh_reweight_entity
   __tracepoint_android_vh_sched_show_task
   __tracepoint_android_vh_sched_stat_runtime_rt
   __tracepoint_android_vh_show_mapcount_pages
