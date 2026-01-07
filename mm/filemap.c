@@ -2711,6 +2711,7 @@ ssize_t filemap_read(struct kiocb *iocb, struct iov_iter *iter,
 
 	iov_iter_truncate(iter, inode->i_sb->s_maxbytes);
 	pagevec_init(&pvec);
+	trace_android_vh_filemap_read(filp, iocb->ki_pos, iov_iter_count(iter));
 
 	do {
 		cond_resched();
@@ -2910,7 +2911,7 @@ static inline loff_t page_seek_hole_data(struct xa_state *xas,
 	do {
 		if (ops->is_partially_uptodate(page, offset, bsz) == seek_data)
 			break;
-		start = (start + bsz) & ~(bsz - 1);
+		start = (start + bsz) & ~((u64)bsz - 1);
 		offset += bsz;
 	} while (offset < thp_size(page));
 unlock:
@@ -3582,6 +3583,7 @@ vm_fault_t filemap_map_pages(struct vm_fault *vmf,
 #endif
 	vm_fault_t ret = (vmf->flags & FAULT_FLAG_SPECULATIVE) ?
 		VM_FAULT_RETRY : 0;
+	pgoff_t first_pgoff = 0;
 
 #ifdef CONFIG_F2FS_APPBOOST
         if (trace_filemap_map_pages_enabled())
@@ -3600,6 +3602,7 @@ vm_fault_t filemap_map_pages(struct vm_fault *vmf,
 #ifdef CONFIG_CONT_PTE_HUGEPAGE
 	CHP_BUG_ON(!ContPteHugePage(head) && PageCont(head));
 #endif
+	first_pgoff = xas.xa_index;
 
 	if (!(vmf->flags & FAULT_FLAG_SPECULATIVE) &&
 	    filemap_map_pmd(vmf, head)) {
@@ -3671,6 +3674,7 @@ unlock:
                 kfree(pathbuf);
 #endif
 	WRITE_ONCE(file->f_ra.mmap_miss, mmap_miss);
+	trace_android_vh_filemap_map_pages(file, first_pgoff, last_pgoff, ret);
 	return ret;
 }
 EXPORT_SYMBOL(filemap_map_pages);
