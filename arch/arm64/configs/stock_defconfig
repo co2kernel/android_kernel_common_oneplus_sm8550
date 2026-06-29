@@ -181,7 +181,7 @@ CONFIG_OPLUS_SCHED_TUNE=y
 # CONFIG_OPLUS_FEATURE_BAN_APP_SET_AFFINITY is not set
 # CONFIG_OPLUS_ADD_CORE_CTRL_MASK is not set
 # CONFIG_OPLUS_FEATURE_EAS_OPT is not set
-# CONFIG_OPLUS_FEATURE_SCHED_DDL is not set
+CONFIG_OPLUS_FEATURE_SCHED_DDL=y
 CONFIG_OPLUS_SCHED_GROUP_OPT=y
 # CONFIG_OPLUS_CAMERA_UX is not set
 # CONFIG_OPLUS_FEATURE_AUDIO_OPT is not set
@@ -814,7 +814,7 @@ CONFIG_MODULE_COMPRESS_NONE=y
 # CONFIG_MODULE_ALLOW_MISSING_NAMESPACE_IMPORTS is not set
 CONFIG_MODPROBE_PATH="/sbin/modprobe"
 CONFIG_TRIM_UNUSED_KSYMS=y
-CONFIG_UNUSED_KSYMS_WHITELIST="/work/jenkins/vendorBasepvc/Build_S_Vendor/49103/code/source/vnd/kernel_platform/out/msm-kernel-kalama-gki/gki_kernel/common/abi_symbollist.raw"
+CONFIG_UNUSED_KSYMS_WHITELIST="/work/000a/workspace/Build_S_Vendor/57955/code/source/vnd/kernel_platform/out/msm-kernel-kalama-gki/gki_kernel/common/abi_symbollist.raw"
 CONFIG_MODULES_TREE_LOOKUP=y
 CONFIG_BLOCK=y
 # CONFIG_BLOCK_LEGACY_AUTOLOAD is not set
